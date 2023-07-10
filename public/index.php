@@ -41,7 +41,7 @@ $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals(
 );
 
 //? router
-$dir_raiz = '/';   //? ruta riaz del proyecto
+$dir_raiz = '/';   //? ruta raiz del proyecto
 use Aura\Router\RouterContainer;
 use Laminas\Diactoros\Response\RedirectResponse;
 
@@ -54,6 +54,19 @@ $map->get('index', $dir_raiz, [
     "action" => "indexAction"
 ]);
 
+$map->get('getReportar', $dir_raiz.'reportar', [
+    "controller" => "App\Controllers\NotificacionesController",
+    "action" => "getReportarAction"
+]);
+$map->post('postFormNotificacion', $dir_raiz . 'reportar/add', [
+    "controller" => 'App\Controllers\NotificacionesController',
+    "action" => 'postFormNotificacionAction'
+]);
+
+$map->get('getReportado', $dir_raiz.'reportado', [
+    "controller" => "App\Controllers\NotificacionesController",
+    "action" => "getReportadoAction"
+]);
 // ejemplo de rutas
 // $map->post('Login', $dir_raiz . 'login', [
 //     "controller" => "App\Controllers\loginController",

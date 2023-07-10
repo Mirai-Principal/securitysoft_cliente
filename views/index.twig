@@ -1,12 +1,38 @@
 {% extends "main.twig" %}
 {% block title %}
-Inicio |
+Lista de reportes |
 {{ parent() }}
 {% endblock %}
 
 {# bloque del contenido de cada vista #}
 {% block contenido %}
 <div class="container">
-  <h1>Mi proyecto base MVC con librerias</h1>
+  <h1>Lista de reportes | Pendiente</h1>
+  <div>
+    <table class="table table-striped table-responsive table-hover">
+      <thead class="thead-inverse">
+        <tr>
+          <th>#</th>
+          <th>Tipo</th>
+          <th>Fecha reporte</th>
+          <th>Estado</th>
+          <th>Foto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td scope="row">1</td>
+          <td>xd</td>
+          <td>xd</td>
+          <td>xd</td>
+          <td>Foto</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock contenido %}
+
+{% block footer %}
+{{ parent() }}
+{% endblock footer %}
