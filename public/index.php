@@ -30,6 +30,7 @@ $capsule->addConnection([
 $capsule->setAsGlobal();
 // Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
 $capsule->bootEloquent();
+Capsule::statement("SET lc_time_names = 'es_EC'"); //? para establecer la zona horaria de la base de datos
 
 //? manejador del request/peticiones
 $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals(
@@ -53,30 +54,39 @@ $map->get('index', $dir_raiz, [
     "controller" => "App\Controllers\IndexController",
     "action" => "indexAction"
 ]);
-
-$map->get('getReportar', $dir_raiz.'reportar', [
-    "controller" => "App\Controllers\NotificacionesController",
-    "action" => "getReportarAction"
-]);
-$map->post('postFormNotificacion', $dir_raiz . 'reportar/add', [
-    "controller" => 'App\Controllers\NotificacionesController',
-    "action" => 'postFormNotificacionAction'
+$map->post('login', $dir_raiz, [
+    "controller" => 'App\Controllers\IndexController',
+    "action" => 'postLoginAction'
 ]);
 
-$map->get('getReportado', $dir_raiz.'reportado', [
-    "controller" => "App\Controllers\NotificacionesController",
-    "action" => "getReportadoAction"
+$map->get('getFormSignup', $dir_raiz . 'signup', [
+    "controller" => 'App\Controllers\IndexController',
+    "action" => 'getFormSignupAction'
 ]);
+$map->post('signup', $dir_raiz . 'signup', [
+    "controller" => 'App\Controllers\IndexController',
+    "action" => 'postSignupAction'
+]);
+
+$map->get('dashboard', $dir_raiz.'dashboard', [
+    "controller" => "App\Controllers\DashboardController",
+    "action" => "getDashboardAction",
+    "auth" => true
+]);
+
+ $map->get('logout', $dir_raiz . 'logout', [
+     "controller" => "App\Controllers\IndexController",
+     "action" => "getLogoutAction",
+     "auth" => true
+ ]);
+
+
 // ejemplo de rutas
 // $map->post('Login', $dir_raiz . 'login', [
 //     "controller" => "App\Controllers\loginController",
 //     "action" => "loginAction"
 // ]);
-// $map->get('logout', $dir_raiz . 'logout', [
-//     "controller" => "App\Controllers\loginController",
-//     "action" => "getLogoutAction",
-//     "auth" => true
-// ]);
+//
 // $map->post('postSignUp', $dir_raiz . 'signup', [
 //     "controller" => "App\Controllers\loginController",
 //     "action" => "postSignUpAction"
@@ -119,7 +129,7 @@ if (!$route) {
     $needsAuth = $handlerData['auth'] ?? false;
 
     //autenticacion
-    $sessionUserId = $_SESSION['userId'] ?? null;
+    $sessionUserId = $_SESSION['ruc'] ?? null;
     if ($needsAuth && !$sessionUserId) {    //? niega el acceso si no esta logeado
         // echo 'protected route';
         $response = new RedirectResponse('/');                            

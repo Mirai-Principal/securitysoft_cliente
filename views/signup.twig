@@ -1,0 +1,59 @@
+{% extends "main.twig" %}
+{% block title %}
+	Registrar |
+	{{ parent() }}
+{% endblock %}
+
+{% block styles %}
+	<style>
+		.card_container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+	</style>
+{% endblock %}
+
+{# bloque del contenido de cada vista #}
+{% block contenido %}
+	<div class="container h-100">
+		<div class="row text-center">
+			<div class="col">
+				<h1>Proveedor de seguridad</h1>
+			</div>
+		</div>
+		<div class="row card_container w-100 ">
+			<div class="col-md-6 ">
+				<div class="card">
+					<div class="text-center">
+						<img src="../public/uploads/proveedor.jpeg" class="card-img-top w-75" alt="...">
+					</div>
+					<div class="card-body text-center">
+						<form action="/signup" method="post">
+							<input type="text" placeholder="Nombre de la empresa" class="form-control" name="nombre_empresa" required>
+							<input type="text" placeholder="RUC" pattern="[0-9]{13}" minlength="13" maxlength="13" title="Debe tener 13 digitos Ej: 0287654321001" class="form-control" name="ruc" required>
+							<input type="text" placeholder="Usuario" class="form-control" name="usuario_nuevo" required>
+							<input type="password" placeholder="Contraseña" class="form-control" name="password_nuevo" required>
+							<input type="submit" value="Registrar" class="btn btn-primary form-control w-50 mt-4">
+						</form>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+
+
+{% endblock contenido %}
+
+{% block footer %}
+	{{ parent() }}
+{% endblock footer %}
+
+{% block scripts %}
+	{{ parent() }}
+	<script>
+		{{ responseMessage|raw }}
+    </script>
+{% endblock scripts %}

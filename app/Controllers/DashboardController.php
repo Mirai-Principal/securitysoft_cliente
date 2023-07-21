@@ -3,12 +3,11 @@
 namespace App\Controllers;
 
 use App\Models\notificaciones;
-use Illuminate\Support\Arr;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\ServerRequest;
 use Respect\Validation\Validator as v;
 
-class NotificacionesController extends CoreController
+class DashboardController extends CoreController
 {
 
     public function getReportarAction()
@@ -47,8 +46,9 @@ class NotificacionesController extends CoreController
     }
 
 
-    public function getReportadoAction()
+    public function getDashboardAction()
     {
-        return $this->renderHTML('reportado.twig');
+        $reportes = notificaciones::all();
+        return $this->renderHTML('dashboard.twig', array('reportes' => $reportes));
     }
 }
