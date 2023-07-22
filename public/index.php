@@ -58,7 +58,6 @@ $map->post('login', $dir_raiz, [
     "controller" => 'App\Controllers\IndexController',
     "action" => 'postLoginAction'
 ]);
-
 $map->get('getFormSignup', $dir_raiz . 'signup', [
     "controller" => 'App\Controllers\IndexController',
     "action" => 'getFormSignupAction'
@@ -67,6 +66,12 @@ $map->post('signup', $dir_raiz . 'signup', [
     "controller" => 'App\Controllers\IndexController',
     "action" => 'postSignupAction'
 ]);
+$map->get('logout', $dir_raiz . 'logout', [
+    "controller" => "App\Controllers\IndexController",
+    "action" => "getLogoutAction",
+    "auth" => true
+]);
+
 
 $map->get('dashboard', $dir_raiz.'dashboard', [
     "controller" => "App\Controllers\DashboardController",
@@ -74,23 +79,13 @@ $map->get('dashboard', $dir_raiz.'dashboard', [
     "auth" => true
 ]);
 
- $map->get('logout', $dir_raiz . 'logout', [
-     "controller" => "App\Controllers\IndexController",
-     "action" => "getLogoutAction",
-     "auth" => true
- ]);
 
+ $map->post('cambiarEstadoNotificacion', $dir_raiz . 'notificaciones/update', [
+    "controller" => "App\Controllers\DashboardController",
+    "action" => "postEstadoAction",
+    "auth" => true
+]);
 
-// ejemplo de rutas
-// $map->post('Login', $dir_raiz . 'login', [
-//     "controller" => "App\Controllers\loginController",
-//     "action" => "loginAction"
-// ]);
-//
-// $map->post('postSignUp', $dir_raiz . 'signup', [
-//     "controller" => "App\Controllers\loginController",
-//     "action" => "postSignUpAction"
-// ]);
 
 
 $matcher = $routerContainer->getMatcher();
