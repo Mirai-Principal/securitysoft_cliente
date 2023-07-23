@@ -11,7 +11,9 @@ use Respect\Validation\Validator as v;
 
 class IndexController extends CoreController{
     public function indexAction(){
-        return $this->renderHTML('index.twig');
+        return $this->renderHTML('index.twig', [
+            "session" => $_SESSION
+        ]);
     }
 
     public function postLoginAction(ServerRequest $request){
@@ -31,7 +33,7 @@ class IndexController extends CoreController{
                                 ->first();
                 if( $existeusuario )
                     if ( password_verify( $postData['password'], $existeusuario->password) ){
-                        $_SESSION['nombre_empresa'] = $existeusuario->nombre_empresa;
+                        $_SESSION['nombre_empresa'] = $existeusuario->nombre_proveedor;
                         $_SESSION['ruc'] = $existeusuario->ruc;
                         return new RedirectResponse('/dashboard');
                     }else{

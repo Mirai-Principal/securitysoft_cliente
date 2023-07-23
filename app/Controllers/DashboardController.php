@@ -95,7 +95,10 @@ class DashboardController extends CoreController
 
     public function getDashboardAction()
     {
-        $reportes = notificaciones::all();
-        return $this->renderHTML('dashboard.twig', array('reportes' => $reportes));
+        $reportes = notificaciones::where('estado', '!=', 'Finalizado')->get();
+        return $this->renderHTML('dashboard.twig', array(
+            'reportes' => $reportes,
+            "session" => $_SESSION
+        ));
     }
 }
