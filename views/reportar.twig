@@ -6,7 +6,7 @@ Reportar emergencia |
 
 {# bloque del contenido de cada vista #}
 {% block contenido %}
-<div class="container">
+<div class="container vh-100 bg-secondary bg-opacity-10">
   <h1>Reportar una emergencia</h1>
   <div>
     <form action="/reportar" method="post">
@@ -35,7 +35,7 @@ Reportar emergencia |
 {% block scripts %}
 	{{ parent() }}
 	<script>
-    {{ responseMessage|raw }}
+    
   
     const Toast = Swal.mixin({
       toast: true,
@@ -79,6 +79,9 @@ Reportar emergencia |
       }
     }
 
-    window.onload = obtenerUbicacion()
+    window.onload = async ()=>{
+      await {{ responseMessage|raw }}
+      obtenerUbicacion()
+    }
   </script>
 {% endblock scripts %}

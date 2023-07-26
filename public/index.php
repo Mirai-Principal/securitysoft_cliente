@@ -90,6 +90,12 @@ $map->post('reportar', $dir_raiz.'reportar', [
     "auth" => true
 ]);
 
+$map->get('NotificacionData', $dir_raiz.'notificaciones/read/{id}', [
+    "controller" => "App\Controllers\DashboardController",
+    "action" => "getNotificacionData",
+    "auth" => true
+]);
+
 
 $matcher = $routerContainer->getMatcher();
 $route = $matcher->match($request);

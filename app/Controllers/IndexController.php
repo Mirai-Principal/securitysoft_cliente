@@ -75,6 +75,7 @@ class IndexController extends CoreController{
 
             $validator = v::key('password', v::stringType()->noWhitespace()->notEmpty())
             ->key('cedula', v::stringType()->notEmpty()->noWhitespace())
+            ->key('telefono', v::stringType()->notEmpty()->noWhitespace())
             ->key('nombres', v::stringType()->notEmpty());
             
             try {
@@ -85,6 +86,7 @@ class IndexController extends CoreController{
                 $cliente = new clientes();
                 $cliente->cedula = $postData['cedula'];
                 $cliente->nombres = $postData['nombres'];
+                $cliente->telefono = $postData['telefono'];
                 $postData['password'] = password_hash($postData['password'], PASSWORD_DEFAULT );
                 $cliente->password = $postData['password'];
                 
@@ -95,7 +97,7 @@ class IndexController extends CoreController{
                 $responseMessage = 'Se ha guardado con éxito';
 
                 $_SESSION['nombres'] = $cliente->nombres;
-                $_SESSION['ruc'] = $cliente->cedula;
+                $_SESSION['cedula'] = $cliente->cedula;
                 $_SESSION['id_cliente'] = $lastId;
 
                 return new RedirectResponse('/dashboard');

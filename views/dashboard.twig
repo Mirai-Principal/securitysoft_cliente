@@ -7,8 +7,13 @@ Dashboard |
 {# bloque de estilos #}
 {% block styles %}
 <style>
-
-        </style>
+    label{
+        display: block;
+    }
+    h4{
+        display: inline;
+    }
+</style>
 {% endblock %}
 
 {% block navbar %}
@@ -17,7 +22,7 @@ Dashboard |
 
 {# bloque del contenido de cada vista #}
 {% block contenido %}
-<div class="container bg-secondary bg-opacity-10">
+<div class="container vh-100 bg-secondary bg-opacity-10">
     <div class="row text-center">
         <h1> Bievenido | {{ session.nombres }}</h1>
     </div>
@@ -38,9 +43,9 @@ Dashboard |
                         <tr>
                             <th>#</th>
                             <th>Tipo</th>
-                            <th>Fecha</th>
+                            <th>Fecha de reporte</th>
                             <th>Estado</th>
-                            <th>Estado</th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody class="table-group-divider">
@@ -49,8 +54,13 @@ Dashboard |
                                 <td scope="row">{{row + 1}}</td>
                                 <td>{{ reporte.tipo }}</td>
                                 <td>{{ reporte.created_at }}</td>
-                                <td>{{ reporte.id_notificacion }}</td>
                                 <td>{{ reporte.estado }}</td>
+                                <td>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-primary btnDetallesModal" id="{{ reporte.id_notificacion }}" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        Ver más detalles
+                                    </button>
+                                </td>
                             </tr>
                             {% endfor %}
         
@@ -61,6 +71,59 @@ Dashboard |
     </div>
     
 </div>
+
+
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">
+            Detalles del reporte
+            <div class="spinner-border text-primary" role="status" id="loaderModal">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+          </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body ">
+            <label>
+                <h4>Tipo: </h4>
+                <span id="tipo"></span>
+            </label>
+            <label>
+                <h4>latitud: </h4>
+                <span id="latitud"></span>
+            </label>
+            <label>
+                <h4>longitud: </h4>
+                <span id="longitud"></span>
+            </label>
+            <label>
+                <h4>Fecha del reporte: </h4>
+                <span id="created_at"></span>
+            </label>
+            <label>
+                <h4>Fecha última actialización: </h4>
+                <span id="updated_at"></span>
+            </label>
+            <label>
+                <h4>Estado: </h4>
+                <span id="estado"></span>
+            </label>
+
+            <label>
+                <h4>Detalles: </h4>
+                <span id="detalles"></span>
+            </label>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock contenido %}
 
 {% block footer %}
@@ -70,39 +133,54 @@ Dashboard |
 {% block scripts %}
 	{{ parent() }}
 	<script>
-        $('.estado').change(function (e) { 
+        
+        
+        $('.btnDetallesModal').click(function (e) { 
             e.preventDefault();
             let obj = e.target
             let id = obj.getAttribute('id')
-            let estado = obj.value
-
             $.ajax({
-                type: "post",
-                url: "/notificaciones/update",
-                data: {
-                    id,
-                    estado
-                },
+                type: "get",
+                url: `/notificaciones/read/${id}`,
                 dataType: "json",
                 success: function (response) {
-                    //dispara alerta
-                    Swal.fire({
-                        title: 'Aviso',
-                        text: response.responseMessage,
-                        icon: response.tipoRespuesta,
-                        confirmButtonText: 'OK',
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        allowEnterKey: true
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            location.reload();
-                        }
-                    })
+                    tipo.innerHTML = response.tipo
+                    detalles.innerHTML = response.detalles
+                    latitud.innerHTML = response.latitud
+                    longitud.innerHTML = response.longitud
+                    created_at.innerHTML = convertToDate(response.created_at)
+                    updated_at.innerHTML = convertToDate(response.updated_at)
+                    estado.innerHTML = response.estado
 
+                    loaderModal.style.display = "none"
+                },
+                beforeSend: function () {
+                    tipo.innerHTML = ''
+                    detalles.innerHTML = ''
+                    latitud.innerHTML = ''
+                    longitud.innerHTML = ''
+                    created_at.innerHTML = ''
+                    updated_at.innerHTML = ''
+                    estado.innerHTML = ''
                 }
             });
         });
+
+        function convertToDate (date) {
+            let fecha = new Date(date);
+
+            // Obtener los componentes de la fecha
+            let dia = fecha.getDate();
+            let mes = fecha.getMonth() + 1; // Los meses en JavaScript son base 0, por lo que se suma 1
+            let anio = fecha.getFullYear();
+            let horas = fecha.getHours();
+            let minutos = fecha.getMinutes();
+            let segundos = fecha.getSeconds();
+
+            // Formatear la fecha en un nuevo formato 'DD/MM/YYYY HH:mm:ss'
+            let nuevoFormato = dia + '/' + mes + '/' + anio + ' ' + horas + ':' + minutos + ':' + segundos;
+            return nuevoFormato
+        }
 
     </script>
 {% endblock scripts %}

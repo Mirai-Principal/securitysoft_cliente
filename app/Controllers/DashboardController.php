@@ -95,9 +95,7 @@ class DashboardController extends CoreController
                 );
 
                 return new RedirectResponse('/dashboard', 301, $headers);*/
-                return $this->renderHTML('reportado.twig', [
-                    'session' => $_SESSION
-                ]);
+                return $this->getReportadoView();
 
             } catch (\Exception $e) {
                 //$responseMessage = $e->getMessage();
@@ -119,10 +117,21 @@ class DashboardController extends CoreController
 
     public function getDashboardAction()
     {
-        $reportes = notificaciones::orderBy('created_at', 'ASC')->get();
+        $reportes = notificaciones::where('id_cliente', $_SESSION['id_cliente'])->orderBy('created_at', 'ASC')->get();
         return $this->renderHTML('dashboard.twig', array(
             'reportes' => $reportes,
             "session" => $_SESSION
         ));
+    }
+
+    public function getNotificacionData(ServerRequest $request){
+        $respuesta = null;
+        if ($request->getMethod() == "GET") {
+            $id = $request->getAttribute('id');
+            $respuesta = notificaciones::where("id_notificacion", $id)
+                              ->first();
+        }
+
+        return $this->jsonReturn($respuesta);
     }
 }
