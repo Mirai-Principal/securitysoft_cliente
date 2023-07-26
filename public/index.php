@@ -79,13 +79,16 @@ $map->get('dashboard', $dir_raiz.'dashboard', [
     "auth" => true
 ]);
 
-
- $map->post('cambiarEstadoNotificacion', $dir_raiz . 'notificaciones/update', [
+$map->get('getFormReportar', $dir_raiz.'reportar', [
     "controller" => "App\Controllers\DashboardController",
-    "action" => "postEstadoAction",
+    "action" => "getFormReportarAction",
     "auth" => true
 ]);
-
+$map->post('reportar', $dir_raiz.'reportar', [
+    "controller" => "App\Controllers\DashboardController",
+    "action" => "postFormReportarAction",
+    "auth" => true
+]);
 
 
 $matcher = $routerContainer->getMatcher();
@@ -124,7 +127,7 @@ if (!$route) {
     $needsAuth = $handlerData['auth'] ?? false;
 
     //autenticacion
-    $sessionUserId = $_SESSION['ruc'] ?? null;
+    $sessionUserId = $_SESSION['cedula'] ?? null;
     if ($needsAuth && !$sessionUserId) {    //? niega el acceso si no esta logeado
         // echo 'protected route';
         $response = new RedirectResponse('/');                            

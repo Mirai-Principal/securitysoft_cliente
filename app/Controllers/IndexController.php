@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\usuarios;
+use App\Models\clientes;
 
 use Illuminate\Database\Capsule\Manager as Capsule;      //? conexion con la base de datos usando Query Builder
 use Laminas\Diactoros\Response\RedirectResponse;
@@ -11,9 +11,10 @@ use Respect\Validation\Validator as v;
 
 class IndexController extends CoreController{
     public function indexAction(){
-        return $this->renderHTML('index.twig', [
-            "session" => $_SESSION
-        ]);
+        if( isset($_SESSION['cedula']) )
+            return new RedirectResponse('/dashboard');
+        else
+            return $this->renderHTML('index.twig');
     }
 
     public function postLoginAction(ServerRequest $request){
@@ -21,20 +22,25 @@ class IndexController extends CoreController{
 
         if ($request->getMethod() == "POST") {
             $postData = $request->getParsedBody();
-            $usuariosValidator = v::key('user_name', v::stringType()->noWhitespace()->notEmpty())
+            print_r($postData);
+
+
+            $validator = v::key('cedula', v::stringType()->noWhitespace()->notEmpty())
             ->key('password', v::stringType()->notEmpty()->noWhitespace());
 
             try {
-                $usuariosValidator->assert($postData);   //? validando
+                $validator->assert($postData);   //? validando
 
-                $usuario = new usuarios();
-                $existeusuario = $usuario
-                                ->where("user_name", $postData['user_name'])
+                $cliente = new clientes();
+                $existe = $cliente
+                                ->where("cedula", $postData['cedula'])
                                 ->first();
-                if( $existeusuario )
-                    if ( password_verify( $postData['password'], $existeusuario->password) ){
-                        $_SESSION['nombre_empresa'] = $existeusuario->nombre_proveedor;
-                        $_SESSION['ruc'] = $existeusuario->ruc;
+                if( $existe )
+                    if ( password_verify( $postData['password'], $existe->password) ){
+                        $_SESSION['nombres'] = $existe->nombres;
+                        $_SESSION['cedula'] = $existe->cedula;
+                        $_SESSION['id_cliente'] = $existe->id_cliente;
+
                         return new RedirectResponse('/dashboard');
                     }else{
                         $responseMessage = 'Credenciales incorrectas o el usuario no existe';
@@ -55,7 +61,10 @@ class IndexController extends CoreController{
     }
 
     public function getFormSignupAction(){
-        return $this->renderHTML('signup.twig');
+        if( isset($_SESSION['cedula']) )
+            return new RedirectResponse('/dashboard');
+        else
+            return $this->renderHTML('signup.twig');
     }
 
     public function postSignupAction(ServerRequest $request){
@@ -64,31 +73,30 @@ class IndexController extends CoreController{
         if ($request->getMethod() == "POST") {
             $postData = $request->getParsedBody();
 
-            $validator = v::key('password_nuevo', v::stringType()->noWhitespace()->notEmpty())
-            ->key('usuario_nuevo', v::stringType()->notEmpty()->noWhitespace())
-            ->key('ruc', v::stringType()->notEmpty()->noWhitespace())
-            ->key('nombre_empresa', v::stringType()->notEmpty());
+            $validator = v::key('password', v::stringType()->noWhitespace()->notEmpty())
+            ->key('cedula', v::stringType()->notEmpty()->noWhitespace())
+            ->key('nombres', v::stringType()->notEmpty());
             
             try {
                 $validator->assert($postData);
 
                 Capsule::beginTransaction();
                 
-                $usuario = new usuarios();
-                $usuario->ruc = $postData['ruc'];
-                $usuario->nombre_proveedor = $postData['nombre_empresa'];
-                $usuario->user_name = $postData['usuario_nuevo'];
-                $postData['password_nuevo'] = password_hash($postData['password_nuevo'], PASSWORD_DEFAULT );
-                $usuario->password = $postData['password_nuevo'];
+                $cliente = new clientes();
+                $cliente->cedula = $postData['cedula'];
+                $cliente->nombres = $postData['nombres'];
+                $postData['password'] = password_hash($postData['password'], PASSWORD_DEFAULT );
+                $cliente->password = $postData['password'];
                 
-                $usuario->save();
+                $cliente->save();
                 Capsule::commit();
 
-                $lastId = $usuario->id;
+                $lastId = $cliente->id;
                 $responseMessage = 'Se ha guardado con éxito';
 
-                $_SESSION['nombre_empresa'] = $usuario->nombre_empresa;
-                $_SESSION['ruc'] = $usuario->ruc;
+                $_SESSION['nombres'] = $cliente->nombres;
+                $_SESSION['ruc'] = $cliente->cedula;
+                $_SESSION['id_cliente'] = $lastId;
 
                 return new RedirectResponse('/dashboard');
             } catch (\Exception $e) {
@@ -109,7 +117,7 @@ class IndexController extends CoreController{
     }
 
     public function getLogoutAction(){
-        unset($_SESSION['user_name']);
+        unset($_SESSION['ruc']);
         session_destroy();
         return new RedirectResponse('/');
     }

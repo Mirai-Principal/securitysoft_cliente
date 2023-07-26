@@ -3,6 +3,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class usuarios extends Model{
-    protected $table = "usuarios";
+class clientes extends Model{
+    protected $table = "clientes";
 }

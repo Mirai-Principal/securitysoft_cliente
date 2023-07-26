@@ -12,9 +12,11 @@ use Respect\Validation\Validator as v;
 class DashboardController extends CoreController
 {
 
-    public function getReportarAction()
+    public function getFormReportarAction()
     {
-        return $this->renderHTML('reportar.twig');
+        return $this->renderHTML('reportar.twig', [
+            'session' => $_SESSION
+        ]);
     }
 
     public function postEstadoAction(ServerRequest $request) {
@@ -62,40 +64,62 @@ class DashboardController extends CoreController
         return $this->jsonReturn($respuesta);
     }
 
-    public function postFormNotificacionAction(ServerRequest $request)
+    public function postFormReportarAction(ServerRequest $request)
     {
         $responseMessage = null;    //var para recuperar los mesajes q suceda durante la ejecucion
 
         if ($request->getMethod() == "POST") {
             $postData = $request->getParsedBody();
 
-            $passMasterValidator = v::key('emergenciaTipo', v::stringType()->notEmpty());
+            $validator = v::key('emergenciaTipo', v::stringType()->notEmpty())
+            ->key('detalles', v::stringType());
 
             try {
-                $passMasterValidator->assert($postData);
+                $validator->assert($postData);
+
+                Capsule::beginTransaction();
 
                 $notificaciones = new notificaciones();
-
                 $notificaciones->tipo = $postData['emergenciaTipo'];
+                $notificaciones->detalles = $postData['detalles'];
+                $notificaciones->latitud = $postData['latitud'];
+                $notificaciones->longitud = $postData['longitud'];
+                $notificaciones->id_cliente = $_SESSION['id_cliente'];
                 $notificaciones->save();
+
+                Capsule::commit();
+
                 $responseMessage = 'Se ha guardado con éxito';
-                $headers = array(
+                /*$headers = array(
                     'responseMessage' => $responseMessage
                 );
 
-                return new RedirectResponse('/reportado', 301, $headers);
+                return new RedirectResponse('/dashboard', 301, $headers);*/
+                return $this->renderHTML('reportado.twig', [
+                    'session' => $_SESSION
+                ]);
 
             } catch (\Exception $e) {
-                // $responseMessage = $e->getMessage();
+                //$responseMessage = $e->getMessage();
+                Capsule::rollback();
                 $responseMessage = 'Ha ocurrido un error! Informe a soporte';
             }
         }
+        return $this->renderHTML('reportar.twig', [
+            'responseMessage' => assetsControler::sweetAlert($responseMessage, 'error')
+        ]);
+    }
+
+    public function getReportadoView() {
+        return $this->renderHTML('reportado.twig', [
+            'session' => $_SESSION
+        ]);
     }
 
 
     public function getDashboardAction()
     {
-        $reportes = notificaciones::where('estado', '!=', 'Finalizado')->get();
+        $reportes = notificaciones::orderBy('created_at', 'ASC')->get();
         return $this->renderHTML('dashboard.twig', array(
             'reportes' => $reportes,
             "session" => $_SESSION
