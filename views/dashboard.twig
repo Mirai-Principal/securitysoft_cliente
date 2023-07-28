@@ -22,7 +22,7 @@ Dashboard |
 
 {# bloque del contenido de cada vista #}
 {% block contenido %}
-<div class="container vh-100 bg-secondary bg-opacity-10">
+<div class="container ">
     <div class="row text-center">
         <h1> Bievenido | {{ session.nombres }}</h1>
     </div>
@@ -37,7 +37,7 @@ Dashboard |
             <hr>
         </div>
         <div class="col-12">
-            <div class="table-responsive">
+            <div class="table-responsive vh-100 bg-secondary bg-opacity-10 overflow-auto">
                 <table class="table table-striped table-hover table-borderless table-light align-middle">
                     <thead class="table-light">
                         <tr>
