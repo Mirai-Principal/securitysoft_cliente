@@ -96,6 +96,17 @@ $map->get('NotificacionData', $dir_raiz.'notificaciones/read/{id}', [
     "auth" => true
 ]);
 
+$map->get('terminosYCondiciones', $dir_raiz.'terminos', [
+    "controller" => "App\Controllers\IndexController",
+    "action" => "getTerminosYCondiciones"
+]);
+
+$map->get('sobreNosotros', $dir_raiz.'sobre', [
+    "controller" => "App\Controllers\IndexController",
+    "action" => "getSobreNosotros"
+]);
+
+
 
 $matcher = $routerContainer->getMatcher();
 $route = $matcher->match($request);
