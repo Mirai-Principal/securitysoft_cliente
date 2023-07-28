@@ -8,10 +8,14 @@ error_reporting(E_ALL);
 require_once "../vendor/autoload.php";
 session_start();
 
-//usando vars de entorno pa acceder a la config de la base
-//? estas dos lineas no necesita un servidor si ya tiene configurado en su sistema las variables de entorno como heroku
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
+try {
+    //usando vars de entorno pa acceder a la config de la base
+    //? estas dos lineas no necesita un servidor si ya tiene configurado en su sistema las variables de entorno como heroku
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+    $dotenv->load();
+} catch (\Exception $e) {
+    //algun eerror si lo hay
+}
 
 //? conexion con la base de datos con eloquent
 use Illuminate\Database\Capsule\Manager as Capsule;
